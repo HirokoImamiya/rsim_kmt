@@ -17,6 +17,21 @@ from rovi_utils import tflib
 Param={
   "xyz":[0,0,0],
   "rpy":[0,0,0],
+  "path_interval":{
+    "ip":"rot_z",
+    "xyz":[-100,0,600],
+    "rpy":[0,120,0],
+    "var":[0,360],
+    "pitch":3.6,
+    "pause":0.1
+  },
+  "path_point":{
+    "ip":"rot_z",
+    "xyz":[-500,0,1000],
+    "rpy":[0,180,90],
+    "var":[90],
+    "pause":1
+  },
   "path1":{
     "ip":"mov_z",
     "xyz":[-100,0,1400],
@@ -52,6 +67,15 @@ Param={
     "rpy":[0,180,90],
     "var":[90],
     "pause":1
+  },
+  "path6":{
+    "ip":"movxy_rotz",
+    "xyz":[-100,0,1100],
+    "rpy":[0,-180,0],
+    "var":[0,360],
+    "radius":500,
+    "pitch":45,
+    "pause":5
   },
   "uf":"uf0"
 }
@@ -93,6 +117,25 @@ def setbase(pos):
   tf.transform=tflib.fromRT(Rt)
   pub_tf.publish(tf);
 
+def set_capture():
+  result = False
+  msg_type = ""
+  rospy.loginfo("vrobo: capture start")
+  pub_capture.publish(mTrue)
+  try:
+    msg = rospy.wait_for_message("~captured", Bool, timeout=10.0)
+    if msg.data:
+      result = True
+      msg_type = "ok"
+    else:
+      msg_type = "ng"
+  except rospy.ROSInterruptException as e:
+    msg_type = "shutdown interrupts"
+  except rospy.ROSException as e:
+    msg_type = "timeout"
+  if msg_type:
+    rospy.loginfo("vrobo: capture finished result=%s", msg_type)
+  return result
 
 def cb_mov(msg):
   global Param
@@ -101,6 +144,27 @@ def cb_mov(msg):
   except Exception as e:
     print("get_param exception:",e.args)
   mov(Param["xyz"]+Param["rpy"])
+  result=mTrue
+  if msg.data:
+    if not set_capture():
+      result=mFalse
+  pub_moved.publish(result)
+
+def cb_mov_save(msg):
+  global Param
+  try:
+    Param.update(rospy.get_param("~param"))
+  except Exception as e:
+    print("get_param exception:",e.args)
+  with open("camera_pos.yaml", "w") as yf:
+    yaml.dump({
+      "autoseq" : {
+        "camposX" : {
+          "xyz" : Param["xyz"],
+          "rpy" : Param["rpy"],
+        }
+      }
+    }, yf, default_flow_style=False)
 
 def cb_base(msg):
   global Param
@@ -110,13 +174,42 @@ def cb_base(msg):
     print("get_param exception:",e.args)
   setbase(Param["xyz"]+Param["rpy"])
 
+def movxy_rotz(prm):
+  mov(prm["xyz"]+prm["rpy"])
+  rospy.sleep(0.01)
+  wTc=getRT(Param["uf"],Config["target_frame_id"])
+  if "pitch" in prm: vars=np.arange(prm["var"][0],prm["var"][1],prm["pitch"])
+  else: vars=prm["var"]
+  print("mov_xy vars=",vars)
+  result=mTrue
+  for theta in vars:
+    rt=np.eye(4)
+    rad=np.deg2rad(theta)
+    rt[:3,:3]=R.from_euler('z',theta,degrees=True).as_matrix()
+    rt[0,3]=prm["radius"]*np.cos(rad)
+    rt[1,3]=prm["radius"]*np.sin(rad)
+#    rospy.loginfo("mov_xy rt=%s", rt)
+#    rospy.loginfo("mov_xy rad=%f", rad)
+    wTcc=rt.dot(wTc)
+    euler=R.from_matrix(wTcc[:3,:3]).as_euler('xyz',degrees=True)
+    rospy.loginfo("mov_xy wTcc=%s", wTcc)
+    rospy.loginfo("mov_xy euler=%s", euler)
+    mov([wTcc[0,3],wTcc[1,3],wTcc[2,3],euler[0],euler[1],euler[2]])
+    rospy.sleep(prm["pause"])
+    if prm['capture']:
+      if not set_capture():
+        result=mFalse
+        break
+  pub_inpos.publish(mTrue)
+
 def mov_z(prm):
   mov(prm["xyz"]+prm["rpy"])
   rospy.sleep(0.01)
   wTc=getRT(Param["uf"],Config["target_frame_id"])
   if "pitch" in prm: vars=np.arange(prm["var"][0],prm["var"][1],prm["pitch"])
   else: vars=prm["var"]
-  print("vars",vars)
+  print("mov_z vars=",vars)
+  result=mTrue
   for z in vars:
     rt=np.eye(4)
     rt[2,3]=z
@@ -124,7 +217,11 @@ def mov_z(prm):
     euler=R.from_matrix(wTcc[:3,:3]).as_euler('xyz',degrees=True)
     mov([wTcc[0,3],wTcc[1,3],wTcc[2,3],euler[0],euler[1],euler[2]])
     rospy.sleep(prm["pause"])
-  pub_inpos.publish(mTrue)
+    if prm['capture']:
+      if not set_capture():
+        result=mFalse
+        break
+  pub_inpos.publish(result)
 
 def rot_z(prm):
   mov(prm["xyz"]+prm["rpy"])
@@ -132,6 +229,8 @@ def rot_z(prm):
   wTc=getRT(Param["uf"],Config["target_frame_id"])
   if "pitch" in prm: vars=np.arange(prm["var"][0],prm["var"][1],prm["pitch"])
   else: vars=prm["var"]
+  print("rot_z vars=",vars)
+  result=mTrue
   for rz in vars:
     rt=np.eye(4)
     rt[:3,:3]=R.from_euler('z',rz,degrees=True).as_matrix()
@@ -139,9 +238,13 @@ def rot_z(prm):
     euler=R.from_matrix(wTcc[:3,:3]).as_euler('xyz',degrees=True)
     mov([wTcc[0,3],wTcc[1,3],wTcc[2,3],euler[0],euler[1],euler[2]])
     rospy.sleep(prm["pause"])
-  pub_inpos.publish(mTrue)
+    if prm['capture']:
+      if not set_capture():
+        result=mFalse
+        break
+  pub_inpos.publish(result)
 
-def path_exec(path):
+def path_exec(path,capt):
   global Param
   exec("sub_"+path+".unregister()")
   try:
@@ -149,19 +252,26 @@ def path_exec(path):
   except Exception as e:
     print("get_param exception:",e.args)
   prm=Param[path]
+  prm['capture']=capt
   exec(prm["ip"]+"(prm)")
   exec("global sub_"+path+"; sub_"+path+"=rospy.Subscriber('/vrobo/"+path+"',Bool,cb_"+path+")")
 
+def cb_path_interval(msg):
+  path_exec("path_interval",msg.data)
+def cb_path_point(msg):
+  path_exec("path_point",msg.data)
 def cb_path1(msg):
-  path_exec("path1")
+  path_exec("path1",msg.data)
 def cb_path2(msg):
-  path_exec("path2")
+  path_exec("path2",msg.data)
 def cb_path3(msg):
-  path_exec("path3")
+  path_exec("path3",msg.data)
 def cb_path4(msg):
-  path_exec("path4")
+  path_exec("path4",msg.data)
 def cb_path5(msg):
-  path_exec("path5")
+  path_exec("path5",msg.data)
+def cb_path6(msg):
+  path_exec("path6",msg.data)
 
 
 ########################################################
@@ -174,13 +284,19 @@ except Exception as e:
   print("get_param exception:",e.args)
 ###Topics
 rospy.Subscriber("/vrobo/mov",Bool,cb_mov)
+rospy.Subscriber("/vrobo/mov_save",Bool,cb_mov_save)
+sub_path_interval=rospy.Subscriber("/vrobo/path_interval",Bool,cb_path_interval)
+sub_path_point=rospy.Subscriber("/vrobo/path_point",Bool,cb_path_point)
 sub_path1=rospy.Subscriber("/vrobo/path1",Bool,cb_path1)
 sub_path2=rospy.Subscriber("/vrobo/path2",Bool,cb_path2)
 sub_path3=rospy.Subscriber("/vrobo/path3",Bool,cb_path3)
 sub_path4=rospy.Subscriber("/vrobo/path4",Bool,cb_path4)
 sub_path5=rospy.Subscriber("/vrobo/path5",Bool,cb_path5)
+sub_path6=rospy.Subscriber("/vrobo/path6",Bool,cb_path6)
+pub_capture = rospy.Publisher("~capture", Bool, queue_size=1)
 rospy.Subscriber("/vrobo/setbase",Bool,cb_base)
 pub_inpos=rospy.Publisher("/vrobo/inpos",Bool,queue_size=1);
+pub_moved=rospy.Publisher("/vrobo/moved",Bool,queue_size=1);
 pub_tf=rospy.Publisher("/update/config_tf",TransformStamped,queue_size=1);
 ###TF
 tfBuffer=tf2_ros.Buffer()

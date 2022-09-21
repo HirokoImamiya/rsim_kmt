@@ -62,6 +62,12 @@ def cb_capture(msg):
   yp=np.ravel(scn.T[1])
   zp=np.ravel(scn.T[2])
   scn=scn[np.abs(yp/zp)<Config["trim_y"]/Config["trim_far"]]
+
+  xp=np.ravel(scn.T[0])
+  scn=scn[np.abs(np.ravel(xp))<Config["trim_x"]/2]
+  xp=np.ravel(scn.T[0])
+  zp=np.ravel(scn.T[2])
+  scn=scn[np.abs(xp/zp)<Config["trim_x"]/Config["trim_far"]]
   print("vcam trimmed",scn.shape)
   if len(scn)<1000:
     print("vcam points too few, abort hidden...",len(scn))

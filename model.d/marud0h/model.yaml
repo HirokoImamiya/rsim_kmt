@@ -1,0 +1,7 @@
+model: marud1
+modelpos:
+  frame: marud1
+  uf: uf1
+recipe: marud93hole
+end_show: On
+solve_save: Off

@@ -1,11 +1,15 @@
 <launch>
-  <node pkg="rsim_kmt" type="vscene.py" name="" output="screen" />
+  <node pkg="rsim_kmt" type="vscene.py" name="" output="screen">
+    <remap from="~param" to="/vscene" />
+  </node>
   <node pkg="rovi" type="floats2pc" name="" args="world">
     <remap from="floats" to="/vscene/floats" />
     <remap from="pc" to="/vscene/pc" />
   </node>
   <node pkg="rsim_kmt" type="vrobo.py" name="" output="screen">
     <remap from="~param" to="/vrobo" />
+    <remap from="~capture" to="/request/capture" />
+    <remap from="~captured" to="/response/capture" />
   </node>
   <node pkg="rsim_kmt" type="vcam.py" name="" output="screen" />
 </launch>

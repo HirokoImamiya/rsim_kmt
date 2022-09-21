@@ -4,6 +4,7 @@ config:
     recipe:
       link: rsim_kmt/recipe
       dir: rsim_kmt/recipe.d
+      inifile: ini_param.yaml
     altitude: '+0'
     message:
       halt: "を停止します"
@@ -64,7 +65,8 @@ config:
       timeout: 2
     indicator4:
       label: "解析"
-      topic: /searcher/stat
+#      topic: /searcher/stat
+      topic: /post/stat
       type: std_msgs/Bool
       timeout: 2
   panel:

@@ -6,12 +6,10 @@
       args="pub camera_info sensor_msgs/CameraInfo
      '{header: {seq: 0, stamp: {secs: 0, nsecs: 0}, frame_id: 'camera'},
       height: 480, width: 640, distortion_model: 'plumb_bob',
-      D: [0],
-      K: [2070.3208281890875, 0.0, 451.6704559326172, 0.0, 2070.3208281890875, 477.6067123413086,
-      0.0, 0.0, 1.0],
+      D: [-2.1593156257172657e-02, -4.7221248220475992e-01, 7.4352931622149196e-04, -9.6727275849864641e-04, 2.1955976063477887e+00],
+      K: [1.9161277159818778e+03, 0.0, 6.5256256892073213e+02, 0.0,1.9161277159818778e+03, 5.2432464127568198e+02, 0.0, 0.0, 1.0], 
       R: [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0],
-      P: [1035.8376579761182, 0.0, 226.62960815429688, 0.0, 0.0, 1035.8376579761182,
-      224.84519386291504, 0.0, 0.0, 0.0, 1.0, 0.0],
+      P: [1.9161277159818778e+03, 0.0, 6.5256256892073213e+02, 0.0, 0.0, 1.9161277159818778e+03, 5.2432464127568198e+02, 0.0, 0.0, 0.0, 1.0, 0.0],
       binning_x: 0, binning_y: 0,
       roi: {x_offset: 0, y_offset: 0, height: 480, width: 640, do_rectify: false}}' -r 2"
       output="screen" />
@@ -39,6 +37,10 @@
   <node pkg="rovi" type="floats2pc" name="" args="camera/capture0/solve0">
     <remap from="floats" to="/master/surface/floats" />
     <remap from="pc" to="/master/surface/pc0" />
+  </node>
+  <node pkg="rovi" type="floats2pc" name="" args="camera/capture0/solve0_sub">
+    <remap from="floats" to="/master/surface_sub/floats" />
+    <remap from="pc" to="/master/surface_sub/pc0" />
   </node>
   <node pkg="rtk_tools" type="report.py" name="" output="screen">
     <remap from="/report/update" to="/request/capture" />

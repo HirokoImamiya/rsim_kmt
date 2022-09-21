@@ -1,0 +1,21 @@
+<launch>
+  <rosparam command="load" file="$(find rsim_kmt)/autoseq.yaml" />
+  <node pkg="rsim_kmt" type="autoseq.py" name="" output="screen">
+    <remap from="~config" to="/config/autoseq" />
+    <remap from="~param" to="/autoseq" />
+    <remap from="~start" to="/autoseq/start" />
+    <remap from="~load" to="/request/recipe_load" />
+    <remap from="~loaded" to="/response/recipe_load" />
+    <remap from="~rmove" to="/vrobo/mov" />
+    <remap from="~rmoved" to="/vrobo/moved" />
+    <remap from="~path_interval" to="/vrobo/path_interval" />
+    <remap from="~path_point" to="/vrobo/path_point" />
+    <remap from="~inpos" to="/vrobo/inpos" />
+    <remap from="~solve" to="/request/solve" />
+    <remap from="~solved" to="/response/solve" />
+    <remap from="~clear" to="/request/clear" />
+    <remap from="~mmove" to="/vscene/mov" />
+    <remap from="~mmoved" to="/vscene/moved" />
+    <remap from="~mupdate" to="/vscene/update" />
+  </node>
+</launch>

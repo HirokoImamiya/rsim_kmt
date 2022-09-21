@@ -32,9 +32,9 @@
     <remap from="~master/surface/floats" to="/master/surface/floats" />
     <remap from="~clear" to="/request/clear" />
     <remap from="~load" to="/request/model_load" />
-    <remap from="~loaded" to="/response/recipe_load" />
+    <remap from="~loaded" to="/request/sub_model_load" />
     <remap from="~save" to="/request/model_save" />
-    <remap from="~saved" to="/response/model_save" />
+    <remap from="~saved" to="/request/sub_model_save" />
     <remap from="~solve" to="/searcher2d/thru2" />
     <remap from="~solved" to="/searcher/solved" />
     <remap from="~redraw" to="/request/redraw" />
@@ -47,8 +47,27 @@
     <remap from="~clear" to="/request/clear" />
     <remap from="~solve" to="/searcher/solved" />
     <remap from="~score" to="/searcher/score" />
-    <remap from="~solved" to="/response/solve" />
+    <remap from="~solved" to="/picker/solved" />
     <remap from="~redraw" to="/request/redraw" />
+  </node>
+ <node pkg="rovi_utils" type="post.py" name="post0" args="path:=$(find rsim_kmt)/recipe" output="screen">
+    <remap from="~config" to="/config/post0" />
+    <remap from="~param" to="/post" />
+    <remap from="~in/surface_sub/floats" to="/scene/surface/floats" />
+    <remap from="~master/surface_sub/floats" to="/master/surface_sub/floats" />
+    <remap from="~clear" to="/request/clear" />
+    <remap from="~load" to="/request/sub_model_load" />
+    <remap from="~loaded" to="/response/recipe_load" />
+    <remap from="~save" to="/request/model_save" />
+    <remap from="~saved" to="/response/model_save" />
+    <remap from="~solve" to="/searcher2d/thru2" />
+    <remap from="~main_solved" to="/searcher/solved" />
+    <remap from="~solved" to="/response/solve" />
+    <remap from="~judged" to="/picker/solved" />
+    <remap from="~redraw" to="/request/redraw" />
+    <remap from="~score" to="/searcher/score" />
+    <remap from="~stat" to="/post/stat" />
+    <remap from="~dump" to="/searcher/dump" />
   </node>
   <node pkg="rovi_utils" type="mesh_aid.py" name="mesh_aid" output="screen">
     <remap from="~config" to="/config/mesh_aid" />

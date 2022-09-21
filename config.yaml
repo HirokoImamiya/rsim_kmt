@@ -7,12 +7,57 @@ config:
     capture_frame_id: camera/capture0
   vrobo:
     target_frame_id: tool0_controller
+  report:
+    keys: ["__recipe__", "retry", "pcount","fitness","num","fitness1","fitness2","fitness3","rmse","azimuth","rotation","Cx","Cy","Cz","tcap","tfeat","tmatch","tsolve"]
+    labels: ["レシピ", "解析回数", "点数","一致度","確定番号","一致度1","一致度2","一致度3","平均誤差","傾き[deg]","回転[deg]","中心X移動[mm]","中心Y移動[mm]","中心Z移動[mm]","撮影処理時間[sec]","特徴処理時間[sec]","マッチング処理時間[sec]","解析処理時間[sec]"]
+  post0:
+    proc: 0
+    solver: "evaluate_solver"
+    scenes: ["surface_sub"]
+    scene_frame_ids: ["camera/capture0"]
+    master_frame_ids: ["camera/master0_sub"]
+    solve_frame_id: "camera/capture0"
+  autoseq:
+    base_frame_id: "base"
+    source_frame_id: "camera/master0"
+    target_frame_id: "camera/capture0/solve0"
 
 vrobo:
   xyz: [0,0,0]
   rpy: [0,0,0]
+  path_interval:
+    ip: rot_z
+    xyz: [-100,0,600]
+    rpy: [0,120,0]
+    var: [0,360]
+    pitch: 3.6
+    pause: 0.1
+  path_point:
+    ip: rot_z
+    xyz: [-500,0,1000]
+    rpy: [0,180,90]
+    var: [90]
+    pause: 1
   uf: uf0
 
+vscene:
+  uf: uf1
+  frame: marud
+  xyz: [0,0,0]
+  rpy: [0,0,0]
+  marud1:
+    show: On
+  marud2:
+    show: Off
+  marud3:
+    show: Off
+  circle1:
+    show: On
+  circle2:
+    show: On
+  circle3:
+    show: On
+  
 picker:
   fitness:
     min: 0
@@ -24,7 +69,7 @@ config_tf:
     parent_frame_id: world  #In stead of URDF
   flange:
     parent_frame_id: tool0_controller
-  marud:
+  marud1:
     parent_frame_id: world
     transform:
       rotation:
@@ -36,7 +81,55 @@ config_tf:
         x: 800
         y: 700
         z: 0
-  circle:
+  marud2:
+    parent_frame_id: world
+    transform:
+      rotation:
+        w: 1
+        x: 0
+        y: 0
+        z: 0
+      translation:
+        x: 800
+        y: 700
+        z: 0
+  marud3:
+    parent_frame_id: world
+    transform:
+      rotation:
+        w: 1
+        x: 0
+        y: 0
+        z: 0
+      translation:
+        x: 800
+        y: 700
+        z: 0
+  circle1:
+    parent_frame_id: world
+    transform:
+      rotation:
+        w: 1
+        x: 0
+        y: 0
+        z: 0
+      translation:
+        x: 800
+        y: -700
+        z: 0
+  circle2:
+    parent_frame_id: world
+    transform:
+      rotation:
+        w: 1
+        x: 0
+        y: 0
+        z: 0
+      translation:
+        x: 800
+        y: -700
+        z: 0
+  circle3:
     parent_frame_id: world
     transform:
       rotation:
@@ -88,3 +181,5 @@ config_tf:
   uf9:                       #as VT
     parent_frame_id: base
 
+post0:
+  evaluate: Off
