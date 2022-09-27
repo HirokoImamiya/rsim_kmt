@@ -8,8 +8,8 @@ config:
   vrobo:
     target_frame_id: tool0_controller
   report:
-    keys: ["__recipe__", "retry", "pcount","fitness","num","fitness1","fitness2","fitness3","rmse","azimuth","rotation","Cx","Cy","Cz","tcap","tfeat","tmatch","tsolve"]
-    labels: ["レシピ", "解析回数", "点数","一致度","確定番号","一致度1","一致度2","一致度3","平均誤差","傾き[deg]","回転[deg]","中心X移動[mm]","中心Y移動[mm]","中心Z移動[mm]","撮影処理時間[sec]","特徴処理時間[sec]","マッチング処理時間[sec]","解析処理時間[sec]"]
+    keys: ["__recipe__", "retry", "pcount","fitness","angle","angle_step1","fitness_step1","angle_step2","fitness_step2","angle_temp","fitness_temp","rmse","azimuth","rotation","tcap","tfeat","tmatch","tsolve"]
+    labels: ["レシピ", "解析回数", "点数","一致度","位相","位相概略角度","位相概略一致度","位相詳細角度","位相詳細一致度","位相合わせ角度","位相合わせ一致度","平均誤差","傾き[deg]","回転[deg]","撮影処理時間[sec]","特徴処理時間[sec]","マッチング処理時間[sec]","解析処理時間[sec]"]
   post0:
     proc: 0
     solver: "evaluate_solver"
@@ -18,6 +18,7 @@ config:
     master_frame_ids: ["camera/master0_sub"]
     solve_frame_id: "camera/capture0"
   autoseq:
+    sub_timeout: 100.0
     base_frame_id: "base"
     source_frame_id: "camera/master0"
     target_frame_id: "camera/capture0/solve0"

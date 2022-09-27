@@ -1,0 +1,8 @@
+model: marud1
+modelpos:
+  frame: marud1
+  uf: uf1
+recipe: marudA3
+#recipe: marudA14
+end_show: On
+solve_save: Off

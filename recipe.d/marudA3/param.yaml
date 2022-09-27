@@ -1,0 +1,90 @@
+autoseq:
+  campos:
+    pos0:
+      path:
+        ip: rot_z
+        pitch: 30
+        rpy:
+        - 0
+        - 120
+        - 0
+        var:
+        - 0
+        - 360
+        xyz:
+        - -100
+        - 0
+        - 600
+      pos: 0
+      type: path_interval
+      uf: uf1
+cropper:
+  cropR: 0
+  cropR2: 0.08
+  cropZ: 0
+  ladC: 0
+  ladW: 0
+  ladW2: 30000
+  mesh: 3
+  nfmin: 0
+  nfrad: 5
+picker:
+  azimuth:
+    max: 0
+    min: 0
+  fitness:
+    max: 1
+    min: 0.6
+  rmse:
+    max: 5
+    min: 0
+  rotation:
+    max: 180
+    min: -180
+  transX:
+    max: 3000
+    min: -3000
+  transY:
+    max: 3000
+    min: -3000
+post:
+  angle: 0
+  axis_save: true
+  eval_threshold: 3
+  evaluate: true
+  pitch: 10
+  pitch_subd: 1
+  repeat: 1
+  var:
+  - 0
+  - 360
+rovi:
+  pshift_genpc:
+    calc:
+      bw_diff: 8
+      darkness: 5
+  ycam:
+    ExposureTimeLevel: 4
+    camera:
+      Gain: 80
+    hdr:
+      enabled: false
+      pcgen_publish: false
+      projector:
+        Intensity: 0.2
+    projector:
+      Intensity: 255
+searcher:
+  cutter:
+    base: 0
+    offset: 0
+    width: 0
+  distance_threshold: 40.5
+  feature_mesh: 27
+  feature_radius: 135
+  icp_threshold: 9
+  normal_min_nn: 5
+  normal_radius: 54
+  remesh: 13.5
+  repeat: 1
+  rotate: 0
