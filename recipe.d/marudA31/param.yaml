@@ -46,7 +46,7 @@ picker:
     min: 0
   fitness:
     max: 1
-    min: 0.6
+    min: 0.9
   rmse:
     max: 5
     min: 0
@@ -99,4 +99,4 @@ searcher:
   normal_radius: 54
   remesh: 13.5
   repeat: 1
-  rotate: 0
+  rotate: 4
