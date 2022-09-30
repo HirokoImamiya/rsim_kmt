@@ -60,8 +60,6 @@ picker:
     max: 3000
     min: -3000
 post:
-  angle: 0
-  axis_save: true
   eval_threshold: 3
   evaluate: true
   pitch: 10
