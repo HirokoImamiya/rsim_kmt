@@ -167,5 +167,7 @@ while not rospy.is_shutdown():
     showModel('circle',frame='circle3',color=(0.8,0.8,0.8),z=400)
   showModel('tatep',color=(0.7,0.7,0.7),x=-100)
   showModel('tatep',color=(0.7,0.7,0.7),x=-500)
+  if not Points_lock:
+    cb_redraw(mTrue)
   Points_lock=True
   rospy.Rate(3).sleep()
