@@ -53,31 +53,12 @@ def set_clear():
   rospy.loginfo("auto: clear")
   pub_clear.publish(mTrue)
   return True
-#  rospy.loginfo("auto: clear start")
-#  result = False
-#  msg_type = ''
-#  pub_clear.publish(mTrue)
-#  try:
-#    msg = rospy.wait_for_message('~cleared', Bool, timeout=Config['sub_timeout'])
-#    if msg.data:
-#      result = True
-#      msg_type = 'ok'
-#    else:
-#      msg_type = 'ng'
-#  except rospy.ROSInterruptException as e:
-#    msg_type = 'shutdown interrupts'
-#  except rospy.ROSException as e:
-#    msg_type = 'timeout'
-#  if msg_type:
-#    rospy.loginfo("auto: clear finished result=%s", msg_type)
-#  return result
 
 def set_solve():
   result = False
   msg_type = ''
   rospy.loginfo("auto: solve start")
   pub_solve.publish(mTrue)
-#  rospy.sleep(1)
   try:
     msg = rospy.wait_for_message('~solved', Bool, timeout=Config['sub_timeout'])
     rospy.loginfo("auto: solve finished msg result=%s", msg.data)
@@ -208,45 +189,27 @@ def recipe_load():
     rospy.logerr("auto: recipe cannot set")
   return result
 
-def set_model_move(prm):
-  result = False
-  msg_type = ''
-  rospy.loginfo("auto: model move start")
-  rospy.set_param('/vscene/frame', prm['frame'])
-  rospy.set_param('/vscene/xyz', prm['xyz'])
-  rospy.set_param('/vscene/rpy', prm['rpy'])
-  pub_mmove.publish(mTrue)
-  try:
-    msg = rospy.wait_for_message('~mmoved', Bool, timeout=Config['sub_timeout'])
-    if msg.data:
-      result = True
-      msg_type = 'ok'
-    else:
-      msg_type = 'ng'
-  except rospy.ROSInterruptException as e:
-    msg_type = 'shutdown interrupts'
-  except rospy.ROSException as e:
-    msg_type = 'timeout'
-  if msg_type:
-    rospy.loginfo("auto: model move finished result=%s", msg_type)
-  return result
-
-def set_all_model_show(show):
+def set_all_model_show(show, tfup):
   for prm in Model:
     rospy.set_param('/vscene/' + prm['model'] + '/show' ,show)
   rospy.loginfo("auto: set_all_model_show show=%s", show)
-  pub_mupdae.publish(mTrue)
+  pub_mupdae.publish(tfup)
+  rospy.sleep(5)
 
-def set_model_show(prm):
+def set_model_show(model, show, tfup):
+  rospy.set_param('/vscene/' + model + '/show' ,show)
+  rospy.loginfo("auto: set_model_show model=%s show=%s", model, show)
+  pub_mupdae.publish(tfup)
+  rospy.sleep(5)
+
+def set_model_end_show(prm):
   if 'model'in prm:
     show = False
     if 'end_show' in prm:
       show = prm['end_show']
-    rospy.set_param('/vscene/' + prm['model'] + '/show' ,show)
-    rospy.loginfo("auto: set_model_show model=%s show=%s", prm['model'], show)
-    pub_mupdae.publish(mTrue)
+    set_model_show(prm['model'], show, mFalse)
 
-def model_move():
+def change_model_pos():
   result = False
   pre_prm = []
   for mprm in Model:
@@ -271,10 +234,9 @@ def model_move():
         if 'range_rz' in prm:
           prm['rpy'][2] = prm['range_rz'] * np.random.rand()   # (b-a)*np.random.rand()+a a=0, b=prm['range_rz']
         rospy.loginfo("auto: model move request model=%s xyz=%s, rpy=%s", mprm['model'], prm['xyz'], prm['rpy'])
-        if 'uf' in prm:
-          rospy.set_param('/vscene/uf', prm['uf'])
         pre_prm = prm
-        result = set_model_move(prm)
+        rospy.set_param('/vscene/' + prm['frame'] + '/xyz', prm['xyz'])
+        rospy.set_param('/vscene/' + prm['frame'] + '/rpy', prm['rpy'])
       else:
         result = False
         rospy.logerr("auto: model position format error")
@@ -282,13 +244,14 @@ def model_move():
       break
   return result
 
-def model_solve():
+def model_solve(wait):
   result = False
   if set_clear():
+    rospy.sleep(3)
     if recipe_load():
       retry_max = 1
-      if 'retry' in Param and Param['retry']:
-        retry_max = Param['retry']
+      if 'solve_retry' in Param and Param['solve_retry']:
+        retry_max = Param['solve_retry']
       rospy.loginfo("auto: solve retry max=%d", retry_max)
       update_campos()
       for prm in CamPos:
@@ -308,10 +271,8 @@ def model_solve():
           pub_report.publish(str(stats))
           rospy.loginfo("auto: solve num=%d", num+1)
           result = set_solve()
-#          if result: break
-          if result:
-            rospy.sleep(1)
-            break
+          rospy.sleep(wait)
+          if result: break
   return result
 
 def update_user_pos(prm):
@@ -355,23 +316,22 @@ def get_solve_result(prm):
 
 def model_seq_start():
   result = False
-  seq_wait = 1
-  if 'seq_end_wait' in Param and Param['seq_end_wait']:
-    seq_wait = Param['seq_end_wait']
+  wait = 1
+  if 'solve_end_wait' in Param and Param['solve_end_wait']:
+    wait = Param['solve_end_wait']
   if 'modelmove' in Param and Param['modelmove']:
-    model_move()
-  set_all_model_show(True)
-  rospy.sleep(2)
+    change_model_pos()
+  set_clear()
+  set_all_model_show(True, mTrue)
   for prm in Model:
     result = False
     if 'model' in prm and 'recipe' in prm:
       rospy.loginfo("auto: model solve start model=%s", prm['model'])
       Param['recipe'] = prm['recipe']
       set_campos_change_data(prm)
-      if model_solve():
+      if model_solve(wait):
         get_solve_result(prm)
-        set_model_show(prm)
-        rospy.sleep(seq_wait)
+        set_model_end_show(prm)
         result = True
       else:
         break
@@ -402,9 +362,6 @@ def cb_seq_start(msg):
 
 def cb_robo_moved(msg):
   rospy.loginfo("auto: cb_robo_moved")
-
-def cb_model_moved(msg):
-  rospy.loginfo("auto: cb_model_moved")
 
 def update_param():
   global Param, Model
@@ -476,7 +433,6 @@ pub_path_point = rospy.Publisher('~path_point', Bool, queue_size=1)
 pub_solve = rospy.Publisher('~solve', Bool, queue_size=1)
 pub_clear = rospy.Publisher('~clear', Bool, queue_size=1)
 sub_start = rospy.Subscriber('~start', Bool, cb_seq_start)
-pub_mmove = rospy.Publisher('~mmove', Bool, queue_size=1)
 pub_mupdae = rospy.Publisher('~mupdate', Bool, queue_size=1)
 pub_report = rospy.Publisher('/report', String, queue_size=1)
 try:
@@ -492,7 +448,6 @@ else:
 
 #何故か下記がないとrospy.wait_for_messageで応答がない
 sub_rmoved = rospy.Subscriber('~rmoved', Bool, cb_robo_moved)
-sub_mmoved = rospy.Subscriber('~mmoved', Bool, cb_model_moved)
 
 seq_exec = False
 

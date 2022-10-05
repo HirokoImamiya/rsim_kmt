@@ -1,5 +1,6 @@
 <launch>
   <node pkg="rsim_kmt" type="vscene.py" name="" output="screen">
+    <remap from="~config" to="/config/vscene" />
     <remap from="~param" to="/vscene" />
   </node>
   <node pkg="rovi" type="floats2pc" name="" args="world">

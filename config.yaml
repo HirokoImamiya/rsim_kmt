@@ -17,6 +17,8 @@ config:
     scene_frame_ids: ["camera/capture0"]
     master_frame_ids: ["camera/master0_sub"]
     solve_frame_id: "camera/capture0"
+  vscene:
+    model_frame_ids: [marud1, marud2, marud3, circle1, circle2, circle3]
   autoseq:
     base_frame_id: "base"
     source_frame_id: "camera/master0"
@@ -41,22 +43,48 @@ vrobo:
   uf: uf0
 
 vscene:
-  uf: uf1
-  frame: marud
-  xyz: [0,0,0]
-  rpy: [0,0,0]
   marud1:
-    show: On
+    name: marud
+    show: false
+    ini_z: 0
+    uf: uf1
+    xyz: [0,0,0]
+    rpy: [0,0,0]
   marud2:
-    show: Off
+    name: marud
+    show: false
+    ini_z: 400
+    uf: uf1
+    xyz: [0,0,0]
+    rpy: [0,0,0]
   marud3:
-    show: Off
+    name: marud
+    show: false
+    ini_z: 800
+    uf: uf1
+    xyz: [0,0,0]
+    rpy: [0,0,0]
   circle1:
-    show: On
+    name: circle
+    show: true
+    ini_z: 0
+    uf: uf2
+    xyz: [0,0,0]
+    rpy: [0,0,0]
   circle2:
-    show: On
+    name: circle
+    show: true
+    ini_z: 200
+    uf: uf2
+    xyz: [0,0,0]
+    rpy: [0,0,0]
   circle3:
-    show: On
+    name: circle
+    show: true
+    ini_z: 400
+    uf: uf2
+    xyz: [0,0,0]
+    rpy: [0,0,0]
   
 picker:
   fitness:

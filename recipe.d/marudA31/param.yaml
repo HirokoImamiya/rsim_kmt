@@ -42,7 +42,7 @@ cropper:
   nfrad: 5
 picker:
   azimuth:
-    max: 0
+    max: 30
     min: 0
   fitness:
     max: 1

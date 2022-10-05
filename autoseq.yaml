@@ -1,7 +1,7 @@
 autoseq:
   seq_retry: 1
-  seq_end_wait: 5
-  retry: 3
+  solve_end_wait: 5
+  solve_retry: 3
 #  seq_model: [marud3c, marud3h, marud2c, marud2h, marud1c, marud1h, circle3, circle2, circle1]
 #  seq_model: [marud0c, marud0h]
   seq_model: [marud0]
