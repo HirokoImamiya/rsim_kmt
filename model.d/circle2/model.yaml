@@ -1,0 +1,9 @@
+model: circle2
+modelpos:
+  frame: circle2
+  range_rz: 360
+recipe: circle732
+campos_change:
+  pos0:
+    path:
+      xyz: [-500,0,1000]

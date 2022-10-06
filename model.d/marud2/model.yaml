@@ -1,0 +1,11 @@
+model: marud2
+modelpos:
+  frame: marud2
+  range_rz: 360
+recipe: marudA31
+end_show: Off
+solve_save: Off
+campos_change:
+  pos1:
+    path:
+      xyz: [-100,0,1000]

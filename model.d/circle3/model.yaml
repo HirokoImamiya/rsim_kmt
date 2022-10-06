@@ -1,0 +1,13 @@
+model: circle3
+modelpos:
+  frame: circle3
+  xyz: [0,0,0]
+  rpy: [0,0,0]
+  range_x: 100
+  range_y: 100
+  range_rz: 360
+recipe: circle732
+campos_change:
+  pos0:
+    path:
+      xyz: [-500,0,1200]

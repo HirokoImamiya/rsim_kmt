@@ -1,0 +1,9 @@
+model: circle1
+modelpos:
+  frame: circle1
+#  xyz: [0,0,0]
+#  rpy: [0,0,0]
+#  range_x: 100
+#  range_y: 100
+  range_rz: 360
+recipe: circle732

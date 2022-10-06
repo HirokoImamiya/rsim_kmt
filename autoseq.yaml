@@ -2,8 +2,7 @@ autoseq:
   seq_retry: 1
   solve_end_wait: 5
   solve_retry: 3
-#  seq_model: [marud3c, marud3h, marud2c, marud2h, marud1c, marud1h, circle3, circle2, circle1]
-#  seq_model: [marud0c, marud0h]
+#  seq_model: [marud3, marud2, marud1, circle3, circle2, circle1]
   seq_model: [marud0]
   modelmove: On
   initpos:
