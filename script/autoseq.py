@@ -399,6 +399,7 @@ def update_campos():
   except Exception as e:
     print("campos get_param exception:",e.args)
   CamPos = []
+  num = 0
   for key in prm.keys():
     if key.startswith('pos'):
       item = prm[key]
@@ -410,7 +411,10 @@ def update_campos():
           if 'rpy' in change['path']:
             item['path']['rpy'] = change['path']['rpy']
       CamPos.append(item)
+    elif key == 'num':
+      num = prm['num']
   sorted(CamPos, key=lambda x: x['pos'])
+  del CamPos[num:]
 
 # Initialize the ROS Node
 rospy.init_node('auto_seq', anonymous=True)

@@ -1,5 +1,6 @@
 autoseq:
   campos:
+    num: 2
     pos0:
       pos: 0
       rpy:

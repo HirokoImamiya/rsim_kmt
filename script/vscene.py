@@ -184,12 +184,14 @@ while not rospy.is_shutdown():
     pcd_lock=False
     if nowParam["tf_update"]:
       for frame in Config["model_frame_ids"]:
-        moveModel(frame,nowParam[frame])
+        if frame in nowParam:
+          moveModel(frame,nowParam[frame])
 
   for frame in Config["model_frame_ids"]:
-    prm=nowParam[frame]
-    if prm["show"]:
-      showModel(prm["name"],frame=frame,color=(0.8,0.8,0.8),z=prm["ini_z"],pcdup=pcd_lock)
+    if frame in nowParam:
+      prm=nowParam[frame]
+      if prm["show"]:
+        showModel(prm["name"],frame=frame,color=(0.8,0.8,0.8),z=prm["ini_z"],pcdup=pcd_lock)
   showModel('tatep',color=(0.7,0.7,0.7),x=-100,pcdup=pcd_lock)
   showModel('tatep',color=(0.7,0.7,0.7),x=-500,pcdup=pcd_lock)
   if not pcd_lock:

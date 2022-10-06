@@ -45,7 +45,7 @@ vrobo:
 vscene:
   marud1:
     name: marud
-    show: false
+    show: true
     ini_z: 0
     uf: uf1
     xyz: [0,0,0]
