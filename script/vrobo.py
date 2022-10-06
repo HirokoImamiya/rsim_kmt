@@ -68,15 +68,6 @@ Param={
     "var":[90],
     "pause":1
   },
-  "path6":{
-    "ip":"movxy_rotz",
-    "xyz":[-100,0,1100],
-    "rpy":[0,-180,0],
-    "var":[0,360],
-    "radius":500,
-    "pitch":45,
-    "pause":5
-  },
   "uf":"uf0"
 }
 Config={
@@ -150,22 +141,6 @@ def cb_mov(msg):
       result=mFalse
   pub_moved.publish(result)
 
-def cb_mov_save(msg):
-  global Param
-  try:
-    Param.update(rospy.get_param("~param"))
-  except Exception as e:
-    print("get_param exception:",e.args)
-  with open("camera_pos.yaml", "w") as yf:
-    yaml.dump({
-      "autoseq" : {
-        "camposX" : {
-          "xyz" : Param["xyz"],
-          "rpy" : Param["rpy"],
-        }
-      }
-    }, yf, default_flow_style=False)
-
 def cb_base(msg):
   global Param
   try:
@@ -173,34 +148,6 @@ def cb_base(msg):
   except Exception as e:
     print("get_param exception:",e.args)
   setbase(Param["xyz"]+Param["rpy"])
-
-def movxy_rotz(prm):
-  mov(prm["xyz"]+prm["rpy"])
-  rospy.sleep(0.01)
-  wTc=getRT(Param["uf"],Config["target_frame_id"])
-  if "pitch" in prm: vars=np.arange(prm["var"][0],prm["var"][1],prm["pitch"])
-  else: vars=prm["var"]
-  print("mov_xy vars=",vars)
-  result=mTrue
-  for theta in vars:
-    rt=np.eye(4)
-    rad=np.deg2rad(theta)
-    rt[:3,:3]=R.from_euler('z',theta,degrees=True).as_matrix()
-    rt[0,3]=prm["radius"]*np.cos(rad)
-    rt[1,3]=prm["radius"]*np.sin(rad)
-#    rospy.loginfo("mov_xy rt=%s", rt)
-#    rospy.loginfo("mov_xy rad=%f", rad)
-    wTcc=rt.dot(wTc)
-    euler=R.from_matrix(wTcc[:3,:3]).as_euler('xyz',degrees=True)
-    rospy.loginfo("mov_xy wTcc=%s", wTcc)
-    rospy.loginfo("mov_xy euler=%s", euler)
-    mov([wTcc[0,3],wTcc[1,3],wTcc[2,3],euler[0],euler[1],euler[2]])
-    rospy.sleep(prm["pause"])
-    if prm['capture']:
-      if not set_capture():
-        result=mFalse
-        break
-  pub_inpos.publish(mTrue)
 
 def mov_z(prm):
   mov(prm["xyz"]+prm["rpy"])
@@ -270,8 +217,6 @@ def cb_path4(msg):
   path_exec("path4",msg.data)
 def cb_path5(msg):
   path_exec("path5",msg.data)
-def cb_path6(msg):
-  path_exec("path6",msg.data)
 
 
 ########################################################
@@ -284,7 +229,6 @@ except Exception as e:
   print("get_param exception:",e.args)
 ###Topics
 rospy.Subscriber("/vrobo/mov",Bool,cb_mov)
-rospy.Subscriber("/vrobo/mov_save",Bool,cb_mov_save)
 sub_path_interval=rospy.Subscriber("/vrobo/path_interval",Bool,cb_path_interval)
 sub_path_point=rospy.Subscriber("/vrobo/path_point",Bool,cb_path_point)
 sub_path1=rospy.Subscriber("/vrobo/path1",Bool,cb_path1)
@@ -292,7 +236,6 @@ sub_path2=rospy.Subscriber("/vrobo/path2",Bool,cb_path2)
 sub_path3=rospy.Subscriber("/vrobo/path3",Bool,cb_path3)
 sub_path4=rospy.Subscriber("/vrobo/path4",Bool,cb_path4)
 sub_path5=rospy.Subscriber("/vrobo/path5",Bool,cb_path5)
-sub_path6=rospy.Subscriber("/vrobo/path6",Bool,cb_path6)
 pub_capture = rospy.Publisher("~capture", Bool, queue_size=1)
 rospy.Subscriber("/vrobo/setbase",Bool,cb_base)
 pub_inpos=rospy.Publisher("/vrobo/inpos",Bool,queue_size=1);
