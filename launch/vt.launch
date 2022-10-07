@@ -41,13 +41,22 @@
     <remap from="~score" to="/searcher/score" />
     <remap from="~stat" to="/searcher/stat" />
   </node>
-  <node pkg="rovi_utils" type="picker.py" name="" output="screen">
+  <node pkg="rovi_utils" type="picker.py" name="picker" args="type:=main" output="screen">
     <remap from="~config" to="/config/picker" />
     <remap from="~param" to="/picker" />
     <remap from="~clear" to="/request/clear" />
     <remap from="~solve" to="/searcher/solved" />
     <remap from="~score" to="/searcher/score" />
     <remap from="~solved" to="/picker/solved" />
+    <remap from="~redraw" to="/request/redraw" />
+  </node>
+  <node pkg="rovi_utils" type="picker.py" name="picker_post" args="type:=sub" output="screen">
+    <remap from="~config" to="/config/picker" />
+    <remap from="~param" to="/picker_post" />
+    <remap from="~clear" to="/request/clear" />
+    <remap from="~solve" to="/post/solved" />
+    <remap from="~score" to="/post/score" />
+    <remap from="~solved" to="/picker_post/solved" />
     <remap from="~redraw" to="/request/redraw" />
   </node>
  <node pkg="rovi_utils" type="post.py" name="post0" args="path:=$(find rsim_kmt)/recipe" output="screen">
@@ -63,9 +72,10 @@
     <remap from="~solve" to="/searcher2d/thru2" />
     <remap from="~main_solved" to="/searcher/solved" />
     <remap from="~solved" to="/response/solve" />
-    <remap from="~judged" to="/picker/solved" />
+    <remap from="~main_judged" to="/picker/solved" />
+    <remap from="~sub_judged" to="/picker_post/solved" />
     <remap from="~redraw" to="/request/redraw" />
-    <remap from="~score" to="/searcher/score" />
+    <remap from="~score" to="/post/score" />
     <remap from="~stat" to="/post/stat" />
     <remap from="~dump" to="/searcher/dump" />
   </node>

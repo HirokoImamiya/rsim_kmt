@@ -54,7 +54,9 @@
 "class":"Check", "name":"/post/evaluate","label":"位相合わせ有無"
 "class":"Number", "name":"/post/pitch","label":"位相概略間隔"
 "class":"Number", "name":"/post/pitch_subd","label":"位相詳細間隔"
-"class":"Number", "name":"/post/eval_threshold","label":"位相あわせ有効点距離"
+"class":"Number", "name":"/post/eval_threshold","label":"有効点距離"
+"class":"Number", "name":"/picker_post/fitness/min","label":"一致度下限"
+"class":"Number", "name":"/picker_post/azimuth/max","label":"傾き上限"
 
 "class":"Title",  "label":"3-1.その他","page":"break"
 "class":"Pub",    "name":"/report/dump","label":"レポート保存"
