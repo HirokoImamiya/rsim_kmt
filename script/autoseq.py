@@ -81,7 +81,9 @@ def set_robo_move(prm, capture):
   rospy.loginfo("auto: robo move start")
   rospy.set_param('/vrobo/xyz', prm['xyz'])
   rospy.set_param('/vrobo/rpy', prm['rpy'])
-  pub_rmove.publish(capture)
+  msg = Bool()
+  msg.data = capture
+  pub_rmove.publish(msg)
   try:
     msg = rospy.wait_for_message('~rmoved', Bool, timeout=Config['sub_timeout'])
     if msg.data:
@@ -113,7 +115,9 @@ def set_robo_path(path, prm, capture):
     rospy.set_param('/vrobo/' + path + '/pitch', prm['pitch'])
   if 'radius'in prm:
     rospy.set_param('/vrobo/' + path + '/radius', prm['radius'])
-  exec('pub_' + path + '.publish(capture)')
+  msg = Bool()
+  msg.data = capture
+  exec('pub_' + path + '.publish(msg)')
   try:
     msg = rospy.wait_for_message('~inpos', Bool, timeout=Config['sub_timeout'])
     if msg.data:
@@ -137,7 +141,7 @@ def robo_init_move():
       rospy.loginfo("auto: robot init move request")
       if 'uf' in prm:
         rospy.set_param('/vrobo/uf', prm['uf'])
-      result = set_robo_move(prm, mFalse)
+      result = set_robo_move(prm, False)
     else:
       rospy.logerr("auto: robot init position format error")
   else:
@@ -150,7 +154,7 @@ def robo_one_move(prm):
     rospy.loginfo("auto: capture position request pos=%d", prm['pos'])
     if 'uf' in prm:
       rospy.set_param('/vrobo/uf', prm['uf'])
-    result = set_robo_move(prm, mTrue)
+    result = set_robo_move(prm, True)
   else:
     rospy.logerr("auto: capture position format error")
   return result
@@ -161,7 +165,7 @@ def robo_path_move(prm):
     rospy.loginfo("auto: capture path request pos=%d path=%s", prm['pos'], prm['type'])
     if 'uf' in prm:
       rospy.set_param('/vrobo/uf', prm['uf'])
-    result = set_robo_path(prm['type'], prm['path'], mTrue)
+    result = set_robo_path(prm['type'], prm['path'], True)
   else:
     rospy.logerr("auto: capture path format error")
   return result
@@ -193,13 +197,17 @@ def set_all_model_show(show, tfup):
   for prm in Model:
     rospy.set_param('/vscene/' + prm['model'] + '/show' ,show)
   rospy.loginfo("auto: set_all_model_show show=%s", show)
-  pub_mupdae.publish(tfup)
+  msg = Bool()
+  msg.data = tfup
+  pub_mupdae.publish(msg)
   rospy.sleep(5)
 
 def set_model_show(model, show, tfup):
   rospy.set_param('/vscene/' + model + '/show' ,show)
   rospy.loginfo("auto: set_model_show model=%s show=%s", model, show)
-  pub_mupdae.publish(tfup)
+  msg = Bool()
+  msg.data = tfup
+  pub_mupdae.publish(msg)
   rospy.sleep(5)
 
 def set_model_end_show(prm):
@@ -207,7 +215,7 @@ def set_model_end_show(prm):
     show = False
     if 'end_show' in prm:
       show = prm['end_show']
-    set_model_show(prm['model'], show, mFalse)
+    set_model_show(prm['model'], show, False)
 
 def change_model_pos():
   result = False
@@ -322,7 +330,7 @@ def model_seq_start():
   if 'modelmove' in Param and Param['modelmove']:
     change_model_pos()
   set_clear()
-  set_all_model_show(True, mTrue)
+  set_all_model_show(True, True)
   for prm in Model:
     result = False
     if 'model' in prm and 'recipe' in prm:
