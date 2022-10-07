@@ -1,0 +1,12 @@
+searcher:
+  remesh: 0
+post:
+  evaluate: Off
+  pitch: 0
+  pitch_subd: 0
+  eval_threshold: 0
+picker_post:
+  azimuth:
+    max: 0
+  fitness:
+    min: 0
